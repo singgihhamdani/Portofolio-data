@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analisis Penjualan Kopi - Juni 2025</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6; /* Soft background color */
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* More rounded corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Softer shadow */
+            padding: 1.5rem;
+        }
+        .header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .text-primary-brand {
+            color: #4c51bf; /* Indigo 700 as primary color */
+        }
+        .bg-primary-light {
+            background-color: #e0e7ff; /* Indigo 100 as light background */
+        }
+        .text-accent-success {
+            color: #38a169; /* Green for positive indicators */
+        }
+        .text-accent-danger {
+            color: #e53e3e; /* Red for negative indicators */
+        }
+        /* Custom styling for chart containers to ensure responsiveness */
+        .chart-container {
+            position: relative;
+            height: 40vh; /* Set a relative height for responsiveness */
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col">
+        <!-- Header / Navbar -->
+        <header class="header p-6 flex justify-between items-center sticky top-0 z-50">
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold text-gray-800">Dashboard Analisis Penjualan Kopi</h1>
+            </div>
+            <div class="flex items-center">
+                <span class="text-gray-600 mr-4">Halo semua, berikut Insight laporan bulan ini!</span>
+                <img src="https://placehold.co/40x40/cbd5e0/4c51bf?text=AD" alt="Avatar" class="w-10 h-10 rounded-full">
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 overflow-y-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Card: Total Penjualan -->
+                <div class="card flex items-center justify-between p-6">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Total Penjualan (Juni)</p>
+                        <p class="text-3xl font-semibold text-gray-900 mt-1" id="total-penjualan">5116 unit</p>
+                    </div>
+                    <div class="p-3 bg-primary-light rounded-full">
+                        <svg class="w-8 h-8 text-primary-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    </div>
+                </div>
+
+                <!-- Card: Total Pendapatan -->
+                <div class="card flex items-center justify-between p-6">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Total Pendapatan (Juni)</p>
+                        <p class="text-3xl font-semibold text-gray-900 mt-1" id="total-pendapatan">Rp 127.900.000</p>
+                    </div>
+                    <div class="p-3 bg-primary-light rounded-full">
+                        <svg class="w-8 h-8 text-primary-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V3m0 9v3m0-3c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                </div>
+
+                <!-- Card: Rata-rata Penjualan Harian -->
+                <div class="card flex items-center justify-between p-6">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Rata-rata Penjualan Harian</p>
+                        <p class="text-3xl font-semibold text-gray-900 mt-1" id="avg-penjualan">170.53 unit</p>
+                    </div>
+                    <div class="p-3 bg-primary-light rounded-full">
+                        <svg class="w-8 h-8 text-primary-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Card: Penjualan per Jenis Kopi (Chart) -->
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Penjualan per Jenis Kopi (Juni)</h2>
+                    <div class="chart-container">
+                        <canvas id="salesByTypeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Card: Tren Penjualan (Chart) -->
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Tren Penjualan Harian (Juni)</h2>
+                    <div class="chart-container">
+                        <canvas id="dailySalesTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Card: Hari Penjualan Tertinggi -->
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Hari dengan Penjualan Tertinggi</h2>
+                    <p class="text-gray-700 mb-2">Tanggal: <span class="font-medium" id="highest-sales-date">2025-06-28</span></p>
+                    <p class="text-gray-700 mb-2">Total Penjualan: <span class="font-medium" id="highest-sales-units">225 unit</span></p>
+                    <p class="text-gray-700">Pendapatan: <span class="font-medium" id="highest-sales-revenue">Rp 5.625.000</span></p>
+                </div>
+
+                <!-- Card: Hari Penjualan Terendah -->
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Hari dengan Penjualan Terendah</h2>
+                    <p class="text-gray-700 mb-2">Tanggal: <span class="font-medium" id="lowest-sales-date">2025-06-29</span></p>
+                    <p class="text-gray-700 mb-2">Total Penjualan: <span class="font-medium" id="lowest-sales-units">127 unit</span></p>
+                    <p class="text-gray-700">Pendapatan: <span class="font-medium" id="lowest-sales-revenue">Rp 3.175.000</span></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Raw sales data from Analisis_Penjualan_Kopi_Juni_2025.ipynb (simulated JSON string)
+        const sales_data_json_raw = `
+        [
+          {
+            "Tanggal": "2025-06-01",
+            "Penjualan_Espresso": 45,
+            "Penjualan_Latte": 60,
+            "Penjualan_Cappuccino": 55,
+            "Penjualan_Total": 160,
+            "Pendapatan_Total_IDR": 4000000
+          },
+          {
+            "Tanggal": "2025-06-02",
+            "Penjualan_Espresso": 48,
+            "Penjualan_Latte": 65,
+            "Penjualan_Cappuccino": 58,
+            "Penjualan_Total": 171,
+            "Pendapatan_Total_IDR": 4275000
+          },
+          {
+            "Tanggal": "2025-06-03",
+            "Penjualan_Espresso": 42,
+            "Penjualan_Latte": 58,
+            "Penjualan_Cappuccino": 52,
+            "Penjualan_Total": 152,
+            "Pendapatan_Total_IDR": 3800000
+          },
+          {
+            "Tanggal": "2025-06-04",
+            "Penjualan_Espresso": 50,
+            "Penjualan_Latte": 70,
+            "Penjualan_Cappuccino": 60,
+            "Penjualan_Total": 180,
+            "Pendapatan_Total_IDR": 4500000
+          },
+          {
+            "Tanggal": "2025-06-05",
+            "Penjualan_Espresso": 40,
+            "Penjualan_Latte": 55,
+            "Penjualan_Cappuccino": 50,
+            "Penjualan_Total": 145,
+            "Pendapatan_Total_IDR": 3625000
+          },
+          {
+            "Tanggal": "2025-06-06",
+            "Penjualan_Espresso": 55,
+            "Penjualan_Latte": 75,
+            "Penjualan_Cappuccino": 65,
+            "Penjualan_Total": 195,
+            "Pendapatan_Total_IDR": 4875000
+          },
+          {
+            "Tanggal": "2025-06-07",
+            "Penjualan_Espresso": 60,
+            "Penjualan_Latte": 80,
+            "Penjualan_Cappuccino": 70,
+            "Penjualan_Total": 210,
+            "Pendapatan_Total_IDR": 5250000
+          },
+          {
+            "Tanggal": "2025-06-08",
+            "Penjualan_Espresso": 35,
+            "Penjualan_Latte": 50,
+            "Penjualan_Cappuccino": 45,
+            "Penjualan_Total": 130,
+            "Pendapatan_Total_IDR": 3250000
+          },
+          {
+            "Tanggal": "2025-06-09",
+            "Penjualan_Espresso": 47,
+            "Penjualan_Latte": 62,
+            "Penjualan_Cappuccino": 57,
+            "Penjualan_Total": 166,
+            "Pendapatan_Total_IDR": 4150000
+          },
+          {
+            "Tanggal": "2025-06-10",
+            "Penjualan_Espresso": 43,
+            "Penjualan_Latte": 59,
+            "Penjualan_Cappuccino": 53,
+            "Penjualan_Total": 155,
+            "Pendapatan_Total_IDR": 3875000
+          },
+          {
+            "Tanggal": "2025-06-11",
+            "Penjualan_Espresso": 52,
+            "Penjualan_Latte": 72,
+            "Penjualan_Cappuccino": 62,
+            "Penjualan_Total": 186,
+            "Pendapatan_Total_IDR": 4650000
+          },
+          {
+            "Tanggal": "2025-06-12",
+            "Penjualan_Espresso": 38,
+            "Penjualan_Latte": 53,
+            "Penjualan_Cappuccino": 48,
+            "Penjualan_Total": 139,
+            "Pendapatan_Total_IDR": 3475000
+          },
+          {
+            "Tanggal": "2025-06-13",
+            "Penjualan_Espresso": 58,
+            "Penjualan_Latte": 78,
+            "Penjualan_Cappuccino": 68,
+            "Penjualan_Total": 204,
+            "Pendapatan_Total_IDR": 5100000
+          },
+          {
+            "Tanggal": "2025-06-14",
+            "Penjualan_Espresso": 62,
+            "Penjualan_Latte": 85,
+            "Penjualan_Cappuccino": 75,
+            "Penjualan_Total": 222,
+            "Pendapatan_Total_IDR": 5550000
+          },
+          {
+            "Tanggal": "2025-06-15",
+            "Penjualan_Espresso": 37,
+            "Penjualan_Latte": 52,
+            "Penjualan_Cappuccino": 47,
+            "Penjualan_Total": 136,
+            "Pendapatan_Total_IDR": 3400000
+          },
+          {
+            "Tanggal": "2025-06-16",
+            "Penjualan_Espresso": 49,
+            "Penjualan_Latte": 68,
+            "Penjualan_Cappuccino": 59,
+            "Penjualan_Total": 176,
+            "Pendapatan_Total_IDR": 4400000
+          },
+          {
+            "Tanggal": "2025-06-17",
+            "Penjualan_Espresso": 44,
+            "Penjualan_Latte": 61,
+            "Penjualan_Cappuccino": 54,
+            "Penjualan_Total": 159,
+            "Pendapatan_Total_IDR": 3975000
+          },
+          {
+            "Tanggal": "2025-06-18",
+            "Penjualan_Espresso": 51,
+            "Penjualan_Latte": 69,
+            "Penjualan_Cappuccino": 61,
+            "Penjualan_Total": 181,
+            "Pendapatan_Total_IDR": 4525000
+          },
+          {
+            "Tanggal": "2025-06-19",
+            "Penjualan_Espresso": 39,
+            "Penjualan_Latte": 54,
+            "Penjualan_Cappuccino": 49,
+            "Penjualan_Total": 142,
+            "Pendapatan_Total_IDR": 3550000
+          },
+          {
+            "Tanggal": "2025-06-20",
+            "Penjualan_Espresso": 56,
+            "Penjualan_Latte": 76,
+            "Penjualan_Cappuccino": 66,
+            "Penjualan_Total": 198,
+            "Pendapatan_Total_IDR": 4950000
+          },
+          {
+            "Tanggal": "2025-06-21",
+            "Penjualan_Espresso": 61,
+            "Penjualan_Latte": 82,
+            "Penjualan_Cappuccino": 72,
+            "Penjualan_Total": 215,
+            "Pendapatan_Total_IDR": 5375000
+          },
+          {
+            "Tanggal": "2025-06-22",
+            "Penjualan_Espresso": 36,
+            "Penjualan_Latte": 51,
+            "Penjualan_Cappuccino": 46,
+            "Penjualan_Total": 133,
+            "Pendapatan_Total_IDR": 3325000
+          },
+          {
+            "Tanggal": "2025-06-23",
+            "Penjualan_Espresso": 46,
+            "Penjualan_Latte": 63,
+            "Penjualan_Cappuccino": 56,
+            "Penjualan_Total": 165,
+            "Pendapatan_Total_IDR": 4125000
+          },
+          {
+            "Tanggal": "2025-06-24",
+            "Penjualan_Espresso": 41,
+            "Penjualan_Latte": 57,
+            "Penjualan_Cappuccino": 51,
+            "Penjualan_Total": 149,
+            "Pendapatan_Total_IDR": 3725000
+          },
+          {
+            "Tanggal": "2025-06-25",
+            "Penjualan_Espresso": 53,
+            "Penjualan_Latte": 71,
+            "Penjualan_Cappuccino": 63,
+            "Penjualan_Total": 187,
+            "Pendapatan_Total_IDR": 4675000
+          },
+          {
+            "Tanggal": "2025-06-26",
+            "Penjualan_Espresso": 37,
+            "Penjualan_Latte": 50,
+            "Penjualan_Cappuccino": 45,
+            "Penjualan_Total": 132,
+            "Pendapatan_Total_IDR": 3300000
+          },
+          {
+            "Tanggal": "2025-06-27",
+            "Penjualan_Espresso": 59,
+            "Penjualan_Latte": 79,
+            "Penjualan_Cappuccino": 69,
+            "Penjualan_Total": 207,
+            "Pendapatan_Total_IDR": 5175000
+          },
+          {
+            "Tanggal": "2025-06-28",
+            "Penjualan_Espresso": 63,
+            "Penjualan_Latte": 86,
+            "Penjualan_Cappuccino": 76,
+            "Penjualan_Total": 225,
+            "Pendapatan_Total_IDR": 5625000
+          },
+          {
+            "Tanggal": "2025-06-29",
+            "Penjualan_Espresso": 34,
+            "Penjualan_Latte": 49,
+            "Penjualan_Cappuccino": 44,
+            "Penjualan_Total": 127,
+            "Pendapatan_Total_IDR": 3175000
+          },
+          {
+            "Tanggal": "2025-06-30",
+            "Penjualan_Espresso": 48,
+            "Penualan_Latte": 64,
+            "Penjualan_Cappuccino": 57,
+            "Penjualan_Total": 169,
+            "Pendapatan_Total_IDR": 4225000
+          },
+          {
+            "Tanggal": "2025-07-01",
+            "Penjualan_Espresso": 50,
+            "Penjualan_Latte": 67,
+            "Penjualan_Cappuccino": 60,
+            "Penjualan_Total": 177,
+            "Pendapatan_Total_IDR": 4425000
+          }
+        ]
+        `;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Parse the raw JSON data
+            const allSalesData = JSON.parse(sales_data_json_raw);
+
+            // Filter data for June 2025
+            const juneSalesData = allSalesData.filter(item => {
+                const date = new Date(item.Tanggal);
+                return date.getMonth() === 5 && date.getFullYear() === 2025; // Month is 0-indexed (June is 5)
+            });
+
+            // Process data for dashboard cards
+            let totalPenjualanJuni = 0;
+            let totalPendapatanJuni = 0;
+            const penjualanPerJenis = {
+                Espresso: 0,
+                Latte: 0,
+                Cappuccino: 0
+            };
+            let highestSalesDay = { totalPenjualan: 0, tanggal: '', pendapatan: 0 };
+            let lowestSalesDay = { totalPenjualan: Infinity, tanggal: '', pendapatan: 0 };
+            let totalDailySales = 0;
+            const dailySalesDates = [];
+            const dailySalesTotals = [];
+
+            juneSalesData.forEach(day => {
+                totalPenjualanJuni += day.Penjualan_Total;
+                totalPendapatanJuni += day.Pendapatan_Total_IDR;
+                penjualanPerJenis.Espresso += day.Penjualan_Espresso || 0; // Use || 0 for robustness against missing keys
+                penjualanPerJenis.Latte += day.Penjualan_Latte || 0;
+                penjualanPerJenis.Cappuccino += day.Penjualan_Cappuccino || 0;
+
+                // For daily sales trend chart
+                dailySalesDates.push(new Date(day.Tanggal).toLocaleDateString('id-ID', {day: '2-digit', month: 'short'}));
+                dailySalesTotals.push(day.Penjualan_Total);
+                totalDailySales += day.Penjualan_Total;
+
+                if (day.Penjualan_Total > highestSalesDay.totalPenjualan) {
+                    highestSalesDay = {
+                        tanggal: day.Tanggal,
+                        totalPenjualan: day.Penjualan_Total,
+                        pendapatan: day.Pendapatan_Total_IDR
+                    };
+                }
+                if (day.Penjualan_Total < lowestSalesDay.totalPenjualan) {
+                    lowestSalesDay = {
+                        tanggal: day.Tanggal,
+                        totalPenjualan: day.Penjualan_Total,
+                        pendapatan: day.Pendapatan_Total_IDR
+                    };
+                }
+            });
+
+            const rataRataPenjualanHarian = totalDailySales / juneSalesData.length;
+
+            const midMonth = new Date('2025-06-15');
+            const penjualanParuhPertama = juneSalesData
+                .filter(day => new Date(day.Tanggal) <= midMonth)
+                .reduce((sum, day) => sum + day.Penjualan_Total, 0);
+            const penjualanParuhKedua = juneSalesData
+                .filter(day => new Date(day.Tanggal) > midMonth)
+                .reduce((sum, day) => sum + day.Penjualan_Total, 0);
+
+            // Update Dashboard Cards
+            document.getElementById('total-penjualan').innerText = `${totalPenjualanJuni} unit`;
+            document.getElementById('total-pendapatan').innerText = `Rp ${totalPendapatanJuni.toLocaleString('id-ID')}`;
+            document.getElementById('avg-penjualan').innerText = `${rataRataPenjualanHarian.toFixed(2)} unit`;
+
+            // Update Highest Sales Day
+            document.getElementById('highest-sales-date').innerText = highestSalesDay.tanggal;
+            document.getElementById('highest-sales-units').innerText = `${highestSalesDay.totalPenjualan} unit`;
+            document.getElementById('highest-sales-revenue').innerText = `Rp ${highestSalesDay.pendapatan.toLocaleString('id-ID')}`;
+
+            // Update Lowest Sales Day
+            document.getElementById('lowest-sales-date').innerText = lowestSalesDay.tanggal;
+            document.getElementById('lowest-sales-units').innerText = `${lowestSalesDay.totalPenjualan} unit`;
+            document.getElementById('lowest-sales-revenue').innerText = `Rp ${lowestSalesDay.pendapatan.toLocaleString('id-ID')}`;
+
+            // Initialize Charts
+
+            // Chart: Penjualan per Jenis Kopi (Doughnut Chart)
+            const salesByTypeCtx = document.getElementById('salesByTypeChart').getContext('2d');
+            new Chart(salesByTypeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(penjualanPerJenis),
+                    datasets: [{
+                        label: 'Penjualan per Jenis Kopi',
+                        data: Object.values(penjualanPerJenis),
+                        backgroundColor: [
+                            'rgb(76, 81, 191)',  // Primary brand color
+                            'rgb(129, 140, 248)',// Lighter primary
+                            'rgb(165, 180, 252)' // Even lighter primary
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: {
+                                    family: 'Inter',
+                                }
+                            }
+                        },
+                        title: {
+                            display: false,
+                            text: 'Penjualan per Jenis Kopi'
+                        }
+                    }
+                }
+            });
+
+            // Chart: Tren Penjualan Harian (Line Chart)
+            const dailySalesTrendCtx = document.getElementById('dailySalesTrendChart').getContext('2d');
+            new Chart(dailySalesTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: dailySalesDates,
+                    datasets: [{
+                        label: 'Total Penjualan Harian',
+                        data: dailySalesTotals,
+                        borderColor: 'rgb(76, 81, 191)', // Primary brand color
+                        backgroundColor: 'rgba(76, 81, 191, 0.2)', // Light fill
+                        tension: 0.3, // Smooth lines
+                        fill: true,
+                        pointBackgroundColor: 'rgb(76, 81, 191)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(76, 81, 191)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false, // Hide legend for single dataset
+                        },
+                        title: {
+                            display: false,
+                            text: 'Tren Penjualan Harian'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tanggal',
+                                font: {
+                                    family: 'Inter',
+                                }
+                            },
+                            grid: {
+                                display: false // Hide x-axis grid lines
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Unit Terjual',
+                                font: {
+                                    family: 'Inter',
+                                }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' unit';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
